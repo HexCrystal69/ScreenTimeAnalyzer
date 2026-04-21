@@ -1,0 +1,19 @@
+# Node
+node_modules/
+server/node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

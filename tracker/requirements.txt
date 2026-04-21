@@ -1,0 +1,5 @@
+psutil
+pywin32
+pygetwindow
+mysql-connector-python
+schedule

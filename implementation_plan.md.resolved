@@ -1,0 +1,116 @@
+# AttenTrack — Full-Stack Digital Wellbeing Analytics
+
+**Stack**: React + Vite | Express.js | MySQL (Sequelize ORM)
+
+Build a full-stack app from the FE wireframe designs. Analyzes screen-time data and provides productivity/attention insights with distraction detection.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The existing `FE/` folder is preserved as reference. New code goes in `client/` + `server/`.
+
+> [!IMPORTANT]
+> **MySQL**: `user=root`, `password=34691218`, `database=attentrack`. Tables auto-created via `sequelize.sync()`.
+
+> [!IMPORTANT]
+> **New Feature: Distracting Apps Detection** — Since this is a web app (not a native desktop agent), detection works as follows:
+> - Users **manually add** apps/websites to their personal distraction list (like a blocklist)
+> - When screen-time data is imported (CSV/manual), entries are **auto-flagged** as "distracting" if they match the user's list
+> - A **browser activity tracker** component periodically logs the active browser tab URL and matches against the list (using `document.visibilityState` + `document.title`)
+> - Each user has their own **isolated** distraction list, tasks, reports, and analytics (all tables have `userId` foreign key)
+
+---
+
+## Proposed Changes
+
+### Backend — Models (`server/models/`)
+
+| Model | Key Columns | Purpose |
+|-------|-------------|---------|
+| **User** | id, email, password(hashed), name | Auth |
+| **ScreenTimeEntry** | id, **userId**(FK), app, category, date, usageMinutes, notifications, timesOpened, **isDistracting**(bool) | Usage data, auto-flagged |
+| **DistractingApp** ⭐NEW | id, **userId**(FK), appName, type(app/website), url, addedAt | Per-user distraction list |
+| **UserTask** ⭐NEW | id, **userId**(FK), title, description, estimatedMinutes, deadline, status, **distractionMinutes**, **completionPercent** | Task tracking + distraction impact |
+| **Alert** | id, **userId**(FK), name, triggerType, appOrCategory, thresholdMinutes, active, notificationMethod | Usage alerts |
+| **Settings** | id, **userId**(FK), productiveStart, productiveEnd, hourlyRate, dailyGoalMinutes, timezone | Config |
+| **Report** | id, **userId**(FK), type, dateFrom, dateTo, format, sections(JSON), filePath | Generated reports |
+
+> Every table is scoped by `userId` — users never see each other's data.
+
+### Backend — Routes (`server/routes/`)
+
+| Route File | Endpoints | What's New |
+|------------|-----------|------------|
+| **auth.js** | POST `/register`, `/login`, `/logout`, GET `/me` | — |
+| **screentime.js** | CRUD entries, POST `/upload` (CSV) | ⭐ Auto-flags entries matching user's distraction list on import |
+| **distracting.js** ⭐NEW | GET/POST/DELETE `/api/distracting-apps` | ⭐ Manage per-user distraction list; POST `/detect` receives browser tab data and auto-logs if distracting |
+| **tasks.js** ⭐NEW | CRUD `/api/tasks`, GET `/api/tasks/:id/impact` | ⭐ Track tasks, calculate distraction impact (how much work could've been done) |
+| **analytics.js** | GET `/dashboard`, `/trends`, `/categories`, `/app-usage` | ⭐ Distraction report: time wasted summary, top distracting apps with percentages |
+| **alerts.js** | CRUD alerts, GET `/check` | ⭐ Auto-triggers when distracting app usage exceeds threshold |
+| **settings.js** | GET/PUT settings | — |
+| **reports.js** | POST `/generate`, GET `/list`, `/download/:id` | ⭐ Per-user reports only (userId filter) |
+| **attention.js** | GET `/score` | — |
+| **opportunity.js** | GET `/cost` | ⭐ Enhanced suggestions: books, courses, earnings, exercise, task completion estimates |
+
+### Backend — Utils (`server/utils/`)
+- **attentionScore.js** — Rule-based scoring (distraction ratio, app switches, notification frequency)
+- **opportunityCost.js** — Distraction mins × hourly rate + alternative activity suggestions
+- **distractionMatcher.js** ⭐NEW — Matches screen-time entries against user's distraction list (fuzzy name matching + URL matching)
+- **taskImpact.js** ⭐NEW — Given distraction time during a task's timeframe, calculates: completion % lost, time remaining if undistracted
+- **seedData.js** — Sample data including sample distraction list
+- **pdfGenerator.js** — Report builder, now includes distraction summary section
+
+### Backend — Sample Data
+**`server/data/sample-screentime.json`** — 30-day dataset with apps: Instagram, YouTube, Chrome, Slack, VS Code, Twitter, Reddit, WhatsApp, Spotify
+
+---
+
+### Frontend — New/Modified Pages
+
+| Page | Route | What's New |
+|------|-------|------------|
+| **Login** | `/login` | — |
+| **Signup** | `/signup` | — |
+| **Dashboard** | `/` | ⭐ Distraction summary card, currently-detected distracting app indicator |
+| **Distracting Apps** ⭐NEW | `/distracting-apps` | ⭐ Add/remove apps+websites to personal list; shows "Currently Running" detected items; toggle to auto-block |
+| **My Tasks** ⭐NEW | `/tasks` | ⭐ Add tasks with estimates; see distraction impact per task; "what you could've completed" calculation |
+| **Trends** | `/trends` | — |
+| **App Usage** | `/app-usage` | ⭐ Distracting badge auto-applied from user's list |
+| **Categories** | `/categories` | — |
+| **Alerts** | `/alerts` | ⭐ Auto-created alerts when distracting apps are added |
+| **Opportunity Cost** | `/opportunity` | ⭐ Enhanced suggestions panel + task-based impact ("you could've finished Task X") |
+| **Settings** | `/settings` | — |
+| **Export Report** | `/reports` | ⭐ Per-user report history, distraction report type option |
+
+### Frontend — New Components
+- **DistractingAppList.jsx** — List with add/remove, app icon, URL field, toggle
+- **BrowserActivityTracker.jsx** — Background component: reads `document.title` + `document.visibilityState` every 30s, posts to `/api/distracting-apps/detect`, shows notification toast if distracting site detected
+- **TaskCard.jsx** — Task card with progress bar, distraction impact overlay
+- **DistractionSuggestions.jsx** — "What you could've done instead" panel (books, courses, earnings, tasks)
+- **Sidebar.jsx** — Updated with 2 new nav items (Distracting Apps, My Tasks)
+
+### Frontend — Shared & Design
+- `react-router-dom`, `react-chartjs-2`, `chart.js`, `axios`, `react-hot-toast`
+- Colors: `#3B4A6B` accent, `#1A7A4A` green, `#B45309` amber, `#C0392B` red
+- Fonts: Plus Jakarta Sans + Inter
+
+---
+
+## Verification Plan
+
+### Automated Tests
+1. **Valid screen-time data → correct app usage**: POST data → GET `/api/analytics/app-usage` → verify results
+2. **Productive hours → productivity loss**: Set hours → POST data → verify loss calculation
+3. **High usage → alert triggered**: Create alert → exceed threshold → verify trigger
+4. **Consistent attention score**: Same data twice → same score
+5. ⭐ **Distraction auto-detection**: Add "Instagram" to distraction list → import CSV with Instagram → verify `isDistracting=true`
+6. ⭐ **Task impact calculation**: Create task → log distraction time → verify completion % impact
+7. ⭐ **Per-user isolation**: Create 2 users → add different data → verify each only sees their own
+
+### Browser-Based Verification
+1. Signup → Login → Dashboard loads with charts
+2. ⭐ Add distracting apps → import data → see auto-flagged entries
+3. ⭐ Add a task → see distraction impact → see suggestions
+4. Navigate all pages → verify rendering
+5. Generate PDF report → download works
+6. ⭐ Open a distracting website tab → see detection toast notification

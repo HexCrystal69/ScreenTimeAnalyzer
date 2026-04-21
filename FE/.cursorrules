@@ -1,0 +1,30 @@
+# New Frame - Cursor AI Rules
+
+## Project Context
+This is a UI project exported from UXMagic Copilot. The design has been converted to HTML/CSS.
+
+## Coding Standards
+- Use semantic HTML elements
+- Follow modern CSS practices (Flexbox, Grid, Custom Properties)
+- Maintain responsive design principles
+- Keep accessibility in mind (ARIA labels, semantic structure)
+- Use modern JavaScript ES6+ syntax
+
+## File Structure
+- index.html: Clean HTML file (no external CDN dependencies)
+- styles.css: Self-contained CSS styles with proper structure
+- script.js: Interactive features and utilities
+- package.json: Project configuration and dependencies
+- .cursorrules: AI assistant guidelines
+
+## AI Assistant Guidelines
+- Focus on clean, maintainable code
+- Suggest improvements for accessibility and performance
+- Help with responsive design enhancements
+- Provide modern CSS solutions
+- Assist with JavaScript interactivity if needed
+
+## Design System
+- Colors and typography are defined in the exported style guide
+- Maintain consistent spacing and sizing
+- Follow the established visual hierarchy
