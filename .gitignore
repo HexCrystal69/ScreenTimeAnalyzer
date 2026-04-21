@@ -17,3 +17,9 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+__pycache__/
+*.pyc
+*.log
+server/reports/
+server/active_user.json

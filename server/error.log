@@ -1,6 +1,0 @@
-Database "attentrack" ensured
-All models synced to MySQL
-
-  AttenTrack API running on http://localhost:5000
-  Health check: http://localhost:5000/api/health
-
