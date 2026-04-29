@@ -1,6 +1,7 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import BrowserTracker from './BrowserTracker';
+import CareerOnboardingModal from './CareerOnboardingModal';
 
 const navItems = [
     { path: '/', label: 'Dashboard', icon: '📊' },
@@ -24,6 +25,7 @@ export default function Layout({ children }) {
     return (
         <div className="app-layout">
             <BrowserTracker />
+            <CareerOnboardingModal />
             {/* Sidebar */}
             <aside className="sidebar">
                 <div className="sidebar-brand">

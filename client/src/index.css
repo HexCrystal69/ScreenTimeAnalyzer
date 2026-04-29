@@ -376,3 +376,14 @@ a { color: var(--accent-light); text-decoration: none; }
   color: #fff;
   box-shadow: 0 2px 8px rgba(59, 74, 107, 0.3);
 }
+
+/* ─── Modal & Onboarding ─────────────────────────────────────────── */
+:root {
+  --surface: var(--bg-card);
+  --text: var(--text-primary);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

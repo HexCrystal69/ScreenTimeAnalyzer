@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { playAlertSound, playSuccessSound, playErrorSound } from '../utils/notificationSound';
 
 export default function Alerts() {
     const [alerts, setAlerts] = useState([]);
@@ -15,15 +16,27 @@ export default function Alerts() {
             .then(([r, t]) => { setAlerts(r.data.alerts || []); setStats(r.data.stats || {}); setTriggered(t.data.triggered || []); })
             .catch(console.error).finally(() => setLoading(false));
     };
+    const prevTriggeredRef = useRef([]);
     useEffect(() => { fetchAlerts(); }, []);
+
+    // Play sound when new alerts get triggered
+    useEffect(() => {
+        if (triggered.length > 0 && triggered.length > prevTriggeredRef.current.length) {
+            const severities = triggered.map(t => t.severity);
+            const worst = severities.includes('critical') ? 'critical'
+                : severities.includes('warning') ? 'warning' : 'info';
+            playAlertSound(worst);
+        }
+        prevTriggeredRef.current = triggered;
+    }, [triggered]);
 
     const createAlert = async (e) => {
         e.preventDefault();
-        try { await api.post('/alerts', newAlert); toast.success('Alert created'); setShowForm(false); fetchAlerts(); } catch (err) { toast.error(err.response?.data?.error || 'Failed'); }
+        try { await api.post('/alerts', newAlert); playSuccessSound(); toast.success('Alert created'); setShowForm(false); fetchAlerts(); } catch (err) { playErrorSound(); toast.error(err.response?.data?.error || 'Failed'); }
     };
 
     const dismissAlert = async (id) => { await api.put(`/alerts/${id}`, { dismissed: true }); fetchAlerts(); };
-    const deleteAlert = async (id) => { await api.delete(`/alerts/${id}`); toast.success('Deleted'); fetchAlerts(); };
+    const deleteAlert = async (id) => { await api.delete(`/alerts/${id}`); playSuccessSound(); toast.success('Deleted'); fetchAlerts(); };
 
     const sevColors = { info: '#3498DB', warning: '#F39C12', critical: '#E74C3C' };
 

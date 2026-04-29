@@ -109,7 +109,7 @@ export default function Tasks() {
                         <h3>Distraction Impact</h3>
                         <div className="impact-hero">
                             <div className="impact-stat large"><span className="impact-val">{impact.impact.distractionFormatted}</span><span className="impact-label">Time Wasted</span></div>
-                            <div className="impact-stat"><span className="impact-val">${impact.impact.costLost}</span><span className="impact-label">Value Lost</span></div>
+                            <div className="impact-stat"><span className="impact-val">₹{impact.impact.costLost}</span><span className="impact-label">Value Lost</span></div>
                         </div>
                         <div className="impact-progress">
                             <div className="impact-compare">

@@ -136,7 +136,7 @@ export default function Dashboard() {
                 <div className="metric-card red">
                     <div className="metric-header"><span className="metric-icon">🚫</span><span className="metric-title">Distractions</span></div>
                     <div className="metric-value">{t.distractingFormatted}</div>
-                    <div className="metric-label">${t.productivityLossCost} lost value</div>
+                    <div className="metric-label">₹{t.productivityLossCost} lost value</div>
                 </div>
             </div>
 

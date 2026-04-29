@@ -28,9 +28,9 @@ export default function OpportunityCost() {
             {/* Hero Card */}
             <div className="cost-hero">
                 <div className="cost-hero-inner">
-                    <div className="cost-stat large"><span className="cost-val">${data.totalCost}</span><span className="cost-label">Productive Value Lost</span></div>
+                    <div className="cost-stat large"><span className="cost-val">₹{data.totalCost}</span><span className="cost-label">Productive Value Lost</span></div>
                     <div className="cost-stat"><span className="cost-val">{data.distractionHours}h</span><span className="cost-label">Distraction Hours</span></div>
-                    <div className="cost-stat"><span className="cost-val">${data.hourlyRate}/hr</span><span className="cost-label">Your Rate</span></div>
+                    <div className="cost-stat"><span className="cost-val">₹{data.hourlyRate}/hr</span><span className="cost-label">Your Rate</span></div>
                 </div>
             </div>
 
@@ -41,7 +41,7 @@ export default function OpportunityCost() {
                     {data.appBreakdown?.length > 0 && (
                         <Bar data={{
                             labels: data.appBreakdown.slice(0, 8).map(a => a.app),
-                            datasets: [{ label: 'Cost ($)', data: data.appBreakdown.slice(0, 8).map(a => a.cost), backgroundColor: '#E74C3C88', borderColor: '#E74C3C', borderWidth: 1, borderRadius: 4 }]
+                            datasets: [{ label: 'Cost (₹)', data: data.appBreakdown.slice(0, 8).map(a => a.cost), backgroundColor: '#E74C3C88', borderColor: '#E74C3C', borderWidth: 1, borderRadius: 4 }]
                         }} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                     )}
                 </div>
@@ -85,7 +85,7 @@ export default function OpportunityCost() {
                         <thead><tr><th>App</th><th>Hours</th><th>Sessions</th><th>Cost</th><th>Action</th></tr></thead>
                         <tbody>
                             {data.appBreakdown.map((a, i) => (
-                                <tr key={i}><td><strong>{a.app}</strong></td><td>{a.hours}h</td><td>{a.sessions}</td><td className="cost-cell">${a.cost}</td><td><span className={`rec-badge ${a.recommendation.toLowerCase().replace(' ', '-')}`}>{a.recommendation}</span></td></tr>
+                                <tr key={i}><td><strong>{a.app}</strong></td><td>{a.hours}h</td><td>{a.sessions}</td><td className="cost-cell">₹{a.cost}</td><td><span className={`rec-badge ${a.recommendation.toLowerCase().replace(' ', '-')}`}>{a.recommendation}</span></td></tr>
                             ))}
                         </tbody>
                     </table>

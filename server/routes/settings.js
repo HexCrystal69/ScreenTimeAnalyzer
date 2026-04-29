@@ -29,7 +29,7 @@ router.put('/', async (req, res) => {
 
         const fields = [
             'productiveStart', 'productiveEnd', 'productiveDays',
-            'hourlyRate', 'dailyGoalMinutes', 'timezone',
+            'career', 'hourlyRate', 'dailyGoalMinutes', 'timezone',
             'theme', 'dateFormat', 'weeklyReportEmail', 'notifications'
         ];
 

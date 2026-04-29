@@ -29,10 +29,17 @@ const Settings = sequelize.define('Settings', {
         defaultValue: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
         comment: 'Days of the week for productive hours'
     },
+    career: {
+        type: DataTypes.STRING(100),
+        defaultValue: null,
+        allowNull: true,
+        comment: 'User career/profession for context'
+    },
     hourlyRate: {
         type: DataTypes.FLOAT,
-        defaultValue: 12.50,
-        comment: 'User hourly value rate for opportunity cost calculations'
+        defaultValue: null,
+        allowNull: true,
+        comment: 'User hourly value rate (₹) for opportunity cost calculations'
     },
     dailyGoalMinutes: {
         type: DataTypes.INTEGER,

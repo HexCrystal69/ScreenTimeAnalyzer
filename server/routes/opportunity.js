@@ -14,7 +14,7 @@ router.get('/cost', async (req, res) => {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - daysAgo);
         const settings = await Settings.findOne({ where: { userId: req.userId } });
-        const hourlyRate = settings ? settings.hourlyRate : 12.50;
+        const hourlyRate = (settings && settings.hourlyRate != null) ? settings.hourlyRate : 500;
 
         const distractingEntries = await ScreenTimeEntry.findAll({
             where: { userId: req.userId, isDistracting: true, date: { [Op.gte]: startDate.toISOString().split('T')[0] } }
